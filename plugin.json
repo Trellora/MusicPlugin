@@ -1,0 +1,19 @@
+{
+  "id": "com.yesplaymusic.trellora",
+  "name": "YesPlayMusic for Trellora · 音乐伴侣",
+  "version": "0.1.0",
+  "description": "网易云音乐公开榜单的每日速览：拉取官方榜单 → 聚合摘要 → 写入 Trellora 日程。v0.1 不含播放器界面与音频播放。",
+  "author": "Trellora contributors（基于 YesPlayMusic 功能设计）",
+  "license": "MIT",
+  "main": "main.js",
+  "engine": { "trellora": ">=1.3.0" },
+  "permissions": ["ui:command", "schedule:write", "system:network", "system:file"],
+  "activation": ["onStartup"],
+  "contributes": {
+    "uiCommands": [
+      { "id": "yesplay-music:sync-daily-digest", "title": "同步今日榜单速览", "panel": "sidebar" },
+      { "id": "yesplay-music:clear-cache", "title": "清空榜单缓存", "panel": "sidebar" },
+      { "id": "yesplay-music:status", "title": "查看插件状态", "panel": "sidebar" }
+    ]
+  }
+}

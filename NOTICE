@@ -1,0 +1,31 @@
+# License notice / 许可声明
+
+## 上游项目
+
+本插件是 [qier222/YesPlayMusic](https://github.com/qier222/YesPlayMusic) 的**功能映射与 clean-room 移植尝试**：
+功能设计（网易云音乐榜单/歌单/歌词浏览等交互意图）参考该仓库的产品设计与功能组织方式。
+
+- 截至 v0.1，本插件**未复制上游仓库的任何源码**；全部代码为 Trellora contributors 面向
+  Trellora 插件 API（`context.*`）重新实现的 clean-room 代码。
+- 上游 YesPlayMusic 以 MIT License 发布，署名保留，原文见 [LICENSE-UPSTREAM](LICENSE-UPSTREAM)
+  （版权行：Copyright (c) 2020-2023 qier222）。
+- 若后续版本确实复制或衍生了上游代码片段，将在本文件中**逐项列出**所复制的文件/函数与对应
+  上游路径；目前该列表为空：
+
+  | 上游路径 | 复制/衍生内容 | 本插件位置 | 状态 |
+  |---|---|---|---|
+  | （无） | — | — | v0.1 未复制任何上游代码 |
+
+## 本插件新增代码
+
+由 Trellora contributors 新增的代码（`lib/`、`main.js`、`build.mjs`、`tests/` 及文档）以 MIT License
+发布，见 [LICENSE](LICENSE)（版权行：Copyright (c) 2026 Trellora contributors）。
+
+## 数据与合规
+
+- 本插件只访问网易云音乐（music.163.com）的**公开、无需登录**的只读接口（排行榜/歌单详情、
+  搜索、歌词），不注入 cookie、不实现登录态、不绕过付费/DRM/地域限制。
+- 登录态相关能力（每日推荐、我的歌单）在 v0.1 中**明确不可用**，仅保留函数签名并返回
+  「v0.2 需要登录态」的可读错误。
+- 本插件与网易云音乐（NetEase Cloud Music）官方无任何关联；"网易云音乐"为其权利人的商标。
+  使用本插件产生的数据请求请遵守目标服务的使用条款。
