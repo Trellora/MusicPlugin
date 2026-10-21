@@ -162,10 +162,10 @@ async function runSync(trigger) {
   const warnings = [];
   const items = [];
   const today = localDateStr();
-  const dayStartIso = (() => {
-    const now = new Date();
-    return new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
-  })();
+  // 契约（docs/yesplay-music-插件化移植方案.md §7.1）：startAt = 当日 09:00（本地，无时区
+  // 字符串，对齐 shared/schedule.ts 的 naive wall-clock 约定 YYYY-MM-DDTHH:mm:ss）。
+  // 不能用 toISOString()（会带 Z/UTC，跨时区会把全天条目归到前一天）。
+  const dayStartWallClock = `${today}T09:00:00`;
   const ttlMs = Math.round(config.cacheTtlHours * 60 * 60 * 1000);
 
   try {
@@ -205,10 +205,9 @@ async function runSync(trigger) {
         kind: 'event',
         title: digest.title,
         description: digest.description,
-        allDay: true,
-        startAt: dayStartIso,
-        category: '音乐',
-        tags: ['yesplay-music', chartName],
+        startAt: dayStartWallClock,
+        category: 'music',
+        tags: ['音乐', '榜单', chartName],
       });
     }
 

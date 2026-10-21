@@ -106,6 +106,29 @@ node -e "const p=require('./plugins/yesplay-music/main.js'); console.log(typeof 
 
 ## 8. 更新日志
 
+### 0.2.0
+
+修复与健壮性（详见 commit 记录）：
+
+- **修复 `startAt` 时间格式**：改用 naive 本地无时区字符串 `YYYY-MM-DDTHH:mm:ss`（对齐 `shared/schedule.ts`
+  与设计文档 §7.1「当日 09:00」），修复跨时区下全天条目被归到前一天的 bug；`category`/`tags` 同步对齐设计文档。
+- **修复 `build.mjs` 路径解析**：改为自包含 `scripts/`（自带 `validate-plugin-manifest.mjs` + `plugin.schema.json`），
+  兼容旧仓库布局，恢复打包能力。
+- **缓存健壮性**：`fnv1aHex` 改为按 UTF-8 字节哈希（消除 emoji/非 BMP 字符键碰撞）；
+  读写经 promise 链串行化（修复并发丢数据）；`set` 校验 `ttlMs`；`clear` 写失败正确 reject；
+  `set` 时顺手清理过期条目（防无界增长）。
+- **`lib/netease.js`**：新增客户端侧兜底超时（`Promise.race`，即使宿主 fetch 悬挂也不会永久 pending）；
+  `code` 改数字比较（字符串 `"200"` 不再误判）；空响应体返回独立 `empty-response` 错误码；
+  `normalizeError` 区分 `TimeoutError`/`AbortError`/通用错误。
+- **`lib/config.js`**：`maxSongs` 先取整再钳制（`1.4→1`、`99.6→100`）；`OFFICIAL_CHART_IDS` 改为
+  从 `lib/netease.js` 单一权威源派生，消除双定义漂移。
+- **`lib/lyrics.js`**：支持 1-4 位小数时间戳；`fracToMs` 按小数秒语义正确缩放+四舍五入
+  （`'9995'→1000ms` 进位，`'1234'→123ms`），修复 4 位小数静默丢行。
+- **`lib/digest.js`**：`truncate` 边界修复（`limit≤0` 返回空串）；魔数提为命名常量。
+- **宿主 `pluginManifest.ts`**：新增 `contributes` 结构化校验（对齐 `plugin.schema.json`），非法贡献在发现期拒绝。
+- **测试覆盖**：从 27 个增至 70 个（新增 `netease.test.js` 25 个 + `boundary.test.js` 18 个），
+  覆盖全部新增边界值与错误码分支。
+
 ### 0.1.0（首个版本）
 
 - 今日榜单速览：官方四榜（可配置）→ 摘要聚合 → 日程幂等写入。

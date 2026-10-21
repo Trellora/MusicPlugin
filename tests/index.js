@@ -14,3 +14,5 @@ require('./lyrics.test.js');
 require('./digest.test.js');
 require('./cache.test.js');
 require('./config.test.js');
+require('./netease.test.js');
+require('./boundary.test.js');

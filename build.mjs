@@ -10,18 +10,26 @@
  */
 
 import { spawnSync } from 'node:child_process';
-import { readdirSync, readFileSync, mkdirSync, writeFileSync, statSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, mkdirSync, writeFileSync, statSync } from 'node:fs';
 import { dirname, join, resolve, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { deflateRawSync, constants as zlibConstants } from 'node:zlib';
 
 const pluginDir = dirname(fileURLToPath(import.meta.url));
-const repoRoot = resolve(pluginDir, '..', '..');
 const outDir = join(pluginDir, 'dist');
 
 // ── 1. manifest 校验（打包闸门） ─────────────────────────────────────────────
-
-const validator = join(repoRoot, 'scripts', 'validate-plugin-manifest.mjs');
+// 校验脚本定位：优先用插件自带 scripts/（自包含，随仓库/拷贝任意位置都可用），
+// 兼容旧布局（<repo>/plugins/yesplay-music/ 下的共享 scripts/）。
+const localValidator = join(pluginDir, 'scripts', 'validate-plugin-manifest.mjs');
+const legacyValidator = resolve(pluginDir, '..', '..', 'scripts', 'validate-plugin-manifest.mjs');
+const validator = existsSync(localValidator) ? localValidator
+  : existsSync(legacyValidator) ? legacyValidator
+  : null;
+if (!validator) {
+  console.error('[build] 找不到 manifest 校验脚本（validate-plugin-manifest.mjs）。');
+  process.exit(1);
+}
 const check = spawnSync(process.execPath, [validator, pluginDir], { stdio: 'inherit' });
 if (check.status !== 0) {
   console.error('[build] manifest 校验未通过，已中止打包。');
@@ -148,6 +156,6 @@ const zipPath = join(outDir, zipName);
 const zipBuf = buildZip(entries);
 writeFileSync(zipPath, zipBuf);
 
-console.log(`[build] 打包完成：${relative(repoRoot, zipPath)}（${zipBuf.length} B，${entries.length} 个条目）`);
+console.log(`[build] 打包完成：${relative(pluginDir, zipPath)}（${zipBuf.length} B，${entries.length} 个条目）`);
 console.log('[build] zip 内清单：');
 for (const file of entries) console.log(`[build]   - ${file.name}`);
