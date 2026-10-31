@@ -1,1 +1,4 @@
 .DS_Store
+# 打包产物：只保留发布 zip，不保留解压后的插件目录
+dist/*.plugin/
+
